@@ -1,6 +1,6 @@
 import React, { useState , useEffect} from 'react'
-import axios from 'axios'
 import Person from './components/Person'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 const App = () => {
@@ -8,6 +8,7 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [newFilter, setFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -38,7 +39,7 @@ const App = () => {
         if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`))
         {
           console.log("newNumber = " + newNumber + " NameExist = " + nameExist)
-          var requestPerson = persons.find(n => {if (n.name === newName) return n.id})
+          var requestPerson = persons.find(n => (n.name === newName))
         
           personService
           .update(requestPerson.id, personObject)
@@ -58,6 +59,13 @@ const App = () => {
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
       })
+     
+      setErrorMessage(
+        `Added ${personObject.name}`
+      )
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000) 
     }  
 
     setNewName('')
@@ -104,6 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <div>
           filter shown with: <input value={newFilter} onChange={handleFilter}/>
       </div>
