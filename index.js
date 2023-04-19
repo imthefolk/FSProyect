@@ -1,6 +1,7 @@
 const http = require('http')
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 app.use(express.json())
 
@@ -29,6 +30,8 @@ let persons = [
 
 ]
 
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
+
 const generateId = () => {
   const maxId = persons.length > 0
     ? Math.max(...persons.map(n => n.id))
@@ -39,22 +42,44 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (!body.content) {
+  if (!body) {
     return response.status(400).json({ 
       error: 'content missing' 
     })
   }
 
-  const note = {
-    content: body.content,
-    important: body.important || false,
-    date: new Date(),
-    id: generateId(),
+  const person = {
+
+    id: Math.floor(Math.random() * (Math.floor(250) - Math.ceil(50)) + Math.ceil(50)),
+    name: body.name,
+    number: body.number
   }
 
-  persons = persons.concat(note)
+  namefound = persons.find(p => p.name === person.name)
 
-  response.json(note)
+  if(!body.name) {
+      return response.status(400).json({ 
+        error: 'name is missing.' 
+      })
+  }
+
+  else if(!body.number) {
+    return response.status(400).json({ 
+      error: 'number is missing.' 
+    })
+  } 
+  
+  else if(namefound) {
+    return response.status(400).json({ 
+      error: 'name must be unique' 
+    })
+  }
+
+  else {
+    persons = persons.concat(person)
+    response.json(person)
+  } 
+
 })
 
 app.get('/', (request, response) => {
@@ -81,12 +106,31 @@ app.get('/api/persons/:id', (request, response) => {
 
   if (note) {
     response.json(note)
-  } else {
-    response.status(204).end()
+    console.log(note)
+  } 
+
+  else {
+    return response.status(400).json({ 
+      error: 'requestid missing' 
+    })
   }
 
-  console.log(note)
-  response.json(note)
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  console.log(id)
+
+  const requestid = persons.find(person => person.id === id)
+  
+  if (requestid) { 
+    persons = persons.filter(person => person.id !== id)
+  }
+
+  response.json(requestid)
+  
+  response.status(204).end()
+
 })
 
 const PORT = 3001
