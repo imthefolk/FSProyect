@@ -2,6 +2,9 @@ const http = require('http')
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const cors = require('cors')
+
+app.use(cors())
 
 app.use(express.json())
 
@@ -125,10 +128,9 @@ app.delete('/api/persons/:id', (request, response) => {
   
   if (requestid) { 
     persons = persons.filter(person => person.id !== id)
+    response.json(requestid)
   }
 
-  response.json(requestid)
-  
   response.status(204).end()
 
 })
