@@ -469,6 +469,7 @@
     "minimatch": "^3.1.2",
     "minimist": "^1.2.7",
     "mkdirp": "^0.5.6",
+    "mongoose": "^7.2.0",
     "morgan": "^1.10.0",
     "ms": "^2.1.2",
     "multicast-dns": "^7.2.5",
@@ -834,7 +835,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf build && cd ../../frontend_proyects/FSProyect && npm run build && cp -r build ../../backend_fsproject/FSProyect/",
+    "deploy": "git push heroku part3:main",
+    "deploy:full": "npm run build:ui && npm run deploy",
+    "logs:prod": "heroku logs --tail"
   },
   "repository": {
     "type": "git",
