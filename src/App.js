@@ -26,16 +26,11 @@ const App = () => {
       number: newNumber,
     }
     
-    const namefound = persons.map((p)=>p.name)
-    console.log(namefound, personObject)
-    var nameExist = namefound.find((el)=>{return el === personObject.name})
-
+    var nameExist = persons.find( el => (el.name === personObject.name) && (el.number !== newNumber))
+  
     if(nameExist)
     {
-      var numberExist = persons.map(person => person.number === newNumber)
-      
-      if (numberExist)
-      {
+  
         if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`))
         {
           console.log("newNumber = " + newNumber + " NameExist = " + nameExist)
@@ -47,18 +42,18 @@ const App = () => {
             setPersons(persons.map(person => person.id !== requestPerson.id ? person : returnedPerson))
   
           })
-        }  
-      } 
+        }     
      
       else alert(newName + ' is already added to phonebook')
     }
     else 
-    {
+    { 
       personService
       .create(personObject)
       .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-      })
+
+        setPersons([...persons,returnedPerson]) 
+      })  
      
       setErrorMessage(
         `Added ${personObject.name}`
@@ -105,9 +100,11 @@ const App = () => {
           `the note '${person.content}' was already deleted from server`
         )
       setPersons(person.filter(p => p.id !== id))
+
         }) 
     } 
   }
+
 
   return (
     <div>
